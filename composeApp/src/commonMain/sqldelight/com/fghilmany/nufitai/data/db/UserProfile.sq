@@ -1,0 +1,48 @@
+-- UserProfile: stores the user's onboarding profile
+
+CREATE TABLE UserProfile (
+    id                TEXT PRIMARY KEY DEFAULT (hex(randomblob(16))),
+    parq_completed    INTEGER NOT NULL DEFAULT 0,
+    health_flags      TEXT NOT NULL DEFAULT '[]',
+    experience        TEXT,
+    goal              TEXT,
+    frequency         TEXT,
+    split             TEXT,
+    split_auto_selected INTEGER NOT NULL DEFAULT 0,
+    split_reason      TEXT,
+    height_cm         REAL,
+    weight_kg         REAL,
+    bmi               REAL,
+    assessment_completed INTEGER NOT NULL DEFAULT 0,
+    created_at        TEXT NOT NULL,
+    updated_at        TEXT NOT NULL
+);
+
+-- Get the user profile by ID
+selectById:
+SELECT * FROM UserProfile
+WHERE id = :id;
+
+-- Get any existing profile (first one found)
+getAnyProfile:
+SELECT * FROM UserProfile
+LIMIT 1;
+
+-- Insert or replace profile
+insertOrReplaceProfile:
+INSERT OR REPLACE INTO UserProfile (id, parq_completed, health_flags, experience, goal, frequency, split, split_auto_selected, split_reason, height_cm, weight_kg, bmi, assessment_completed, created_at, updated_at)
+VALUES (:id, :parq_completed, :health_flags, :experience, :goal, :frequency, :split, :split_auto_selected, :split_reason, :height_cm, :weight_kg, :bmi, :assessment_completed, :created_at, :updated_at);
+
+-- Check if any profile exists
+checkProfileExists:
+SELECT EXISTS(SELECT 1 FROM UserProfile LIMIT 1);
+
+-- Check if PAR-Q is completed
+selectParqCompleted:
+SELECT parq_completed FROM UserProfile
+WHERE id = :id;
+
+-- Delete profile by ID
+deleteProfileById:
+DELETE FROM UserProfile
+WHERE id = :id;

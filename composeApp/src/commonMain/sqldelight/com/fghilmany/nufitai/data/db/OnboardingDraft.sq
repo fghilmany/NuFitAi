@@ -1,0 +1,37 @@
+-- OnboardingDraft: persists partial wizard state for app-kill recovery
+
+CREATE TABLE OnboardingDraft (
+    id              TEXT PRIMARY KEY DEFAULT (hex(randomblob(16))),
+    parq_answers    TEXT NOT NULL DEFAULT '{}',
+    parq_completed  INTEGER NOT NULL DEFAULT 0,
+    assessment_step INTEGER,
+    assessment_answers TEXT NOT NULL DEFAULT '{}',
+    body_height_cm  REAL,
+    body_weight_kg  REAL,
+    started_at      TEXT NOT NULL,
+    completed_at    TEXT
+);
+
+-- Get draft by ID
+selectDraftById:
+SELECT * FROM OnboardingDraft
+WHERE id = :id;
+
+-- Get any existing draft (first one found)
+getAnyDraft:
+SELECT * FROM OnboardingDraft
+LIMIT 1;
+
+-- Insert or replace a draft
+insertOrReplaceDraft:
+INSERT OR REPLACE INTO OnboardingDraft (id, parq_answers, parq_completed, assessment_step, assessment_answers, body_height_cm, body_weight_kg, started_at, completed_at)
+VALUES (:id, :parq_answers, :parq_completed, :assessment_step, :assessment_answers, :body_height_cm, :body_weight_kg, :started_at, :completed_at);
+
+-- Delete draft by ID
+deleteDraftById:
+DELETE FROM OnboardingDraft
+WHERE id = :id;
+
+-- Delete all drafts
+deleteAllDrafts:
+DELETE FROM OnboardingDraft;
